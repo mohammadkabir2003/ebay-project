@@ -1,15 +1,12 @@
-require('dotenv').config(); // Load environment variables from .env file
 const mysql = require('mysql2');
 
 // Create a connection pool
 const db = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  waitForConnections: true,   // Allow requests to wait for a connection
-  connectionLimit: 10,        // Limit the maximum number of connections
-  queueLimit: 0               // No limit on queued connection requests
+  host: 'localhost',
+  user: 'root',
+  password: 'hello5127',
+  database: 'e-bid',
+  port: 3306  // MySQL listens on port 3306
 });
 
 // Export the pool so it can be used elsewhere
