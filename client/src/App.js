@@ -1,24 +1,21 @@
-import React, { useState } from 'react';
-import LandingPage from './components/LandingPage';
-import Login from './components/Login';
-import SignUp from './components/SignUp';
+import React from "react";
+import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
+import Footer from "./components/Footer";
 
-const App = () => {
-  const [currentPage, setCurrentPage] = useState('landing');
+//import Aboutme from "./components/Aboutme";
+//import Services from "./components/Services";
+//import Location from "./components/Location";
+//import Contacts from "./components/Contacts";
 
-  const goToLogin = () => setCurrentPage('login');
-  const goToSignUp = () => setCurrentPage('signup');
-  const goToLanding = () => setCurrentPage('landing');
-
+function App() {
   return (
     <div>
-      {currentPage === 'landing' && <LandingPage onLoginClick={goToLogin} onSignUpClick={goToSignUp} />}
-      {currentPage === 'login' && <Login onBackClick={goToLanding} />}
-      {currentPage === 'signup' && <SignUp onBackClick={goToLanding} />}
+      <Navbar />
+      <Hero />
+      <Footer />
     </div>
   );
-};
+}
 
 export default App;
-
-
