@@ -1,6 +1,7 @@
 // Auth.js
 import React from 'react';
 import { Link } from 'react-router-dom';
+import SignUpForm from './SignUpForm';
 
 const Auth = () => {
   return (
@@ -30,33 +31,9 @@ const Auth = () => {
           {/* Divider */}
           <div className="border-l-2 h-auto mx-4"></div>
 
+          
           {/* Signup Form */}
-          <div className="flex-1 px-6">
-            <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
-            <input
-              type="text"
-              placeholder="Name"
-              className="border border-gray-300 p-2 w-full mb-4 rounded-md"
-            />
-            <input
-              type="text"
-              placeholder="Username"
-              className="border border-gray-300 p-2 w-full mb-4 rounded-md"
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              className="border border-gray-300 p-2 w-full mb-4 rounded-md"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="border border-gray-300 p-2 w-full mb-4 rounded-md"
-            />
-            <button className="w-full bg-green-600 text-white py-2 rounded-md">
-              Sign Up
-            </button>
-          </div>
+          <SignUpForm />
         </div>
 
         {/* Back to Home Button */}
