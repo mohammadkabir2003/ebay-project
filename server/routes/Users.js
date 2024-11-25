@@ -16,13 +16,16 @@ router.get('/users', (req, res) => {
   });
 });
 
-/*
-app.post('/register', async (req, res) => {
-  const { username, password } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10); // Hash the password
 
-  const query = `INSERT INTO users (username, password, status) VALUES (?, ?, 'pending')`;
-  db.query(query, [username, hashedPassword], (err, results) => {
+router.post('/register', (req, res) => {
+  const { name, username, email, password } = req.body;
+
+  // SQL query to insert a new user
+  const query = `INSERT INTO users (name, username, email, password, status) VALUES (?, ?, ?, ?, 'pending')`;
+  const values = [name, username, email, password];
+
+  // Execute the query
+  db.query(query, values, (err, result) => {
     if (err) {
       return res.status(500).json({ error: 'Database error' });
     }
@@ -30,6 +33,7 @@ app.post('/register', async (req, res) => {
   });
 });
 
+/*
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
 
