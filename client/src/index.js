@@ -5,6 +5,7 @@ import App from "./App";
 import Profile from "./pages/Profile";
 import Contact from "./pages/Contact";
 import Authentication from "./pages/Authentication";
+import AdminDash from "./pages/AdminDash";
 
 //import reportWebVitals from "./reportWebVitals";
 
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: "auth",
     element: <Authentication />,
+  },
+  {
+    path: "admin",
+    element: <AdminDash />,
   },
 ]);
 

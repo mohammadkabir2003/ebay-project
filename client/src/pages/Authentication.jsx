@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SignUpForm from './SignUpForm';
+import LoginForm from './LoginForm';
 
 const Auth = () => {
   return (
@@ -11,22 +12,7 @@ const Auth = () => {
         {/* Authentication Container */}
         <div className="flex w-full">
           {/* Login Form */}
-          <div className="flex-1 px-6">
-            <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
-            <input
-              type="text"
-              placeholder="Username"
-              className="border border-gray-300 p-2 w-full mb-4 rounded-md"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              className="border border-gray-300 p-2 w-full mb-4 rounded-md"
-            />
-            <button className="w-full bg-blue-600 text-white py-2 rounded-md">
-              Login
-            </button>
-          </div>
+          <LoginForm />
 
           {/* Divider */}
           <div className="border-l-2 h-auto mx-4"></div>
