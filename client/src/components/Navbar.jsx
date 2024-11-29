@@ -78,7 +78,7 @@ const Navbar = () => {
           </Link>
 
           {!isLoggedIn ? (
-          <Link to="/auth" className="bg-green-400 px-4 py-2 rounded hover:bg-red-500">
+          <Link to="/auth" className="bg-green-400 px-3 py-4 rounded hover:bg-red-500">
             Signup/Login
           </Link>
         ) : (

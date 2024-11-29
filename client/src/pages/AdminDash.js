@@ -98,7 +98,7 @@ const AdminDashboard = () => {
                       Approve
                     </button>
                     <button
-                      onClick={() => updateStatus(user.id, 'suspended')}
+                      onClick={() => updateStatus(user.id, 'rejected')}
                       className="bg-red-600 text-white px-4 py-1 rounded-md"
                     >
                       Reject

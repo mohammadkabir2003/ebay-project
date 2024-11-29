@@ -30,7 +30,7 @@ adminrouter.get('/admin/pending-users', isAdmin, isAuthenticated, (req, res) => 
 adminrouter.post('/admin/update-status', isAdmin, (req, res) => {
     const { userId, status } = req.body;
   
-    if (!['approved', 'suspended'].includes(status)) {
+    if (!['approved', 'rejected'].includes(status)) {
       return res.status(400).json({ error: 'Invalid status' });
     }
   
@@ -39,11 +39,7 @@ adminrouter.post('/admin/update-status', isAdmin, (req, res) => {
       if (err) {
         return res.status(500).json({ error: 'Database error' });
       }
-/*
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ error: 'User not found or already has a non-visitor role.' });
-      }
-*/
+
       res.json({ message: `User ${status} successfully` });
   });
 });

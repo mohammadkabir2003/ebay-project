@@ -46,7 +46,7 @@ router.post('/login', (req, res) => {
     const user = results[0];
 
     // Check if the user is approved or rejected
-    if (user.status === 'suspended') {
+    if (user.status === 'rejected') {
       return res.status(403).json({ error: 'Your account has been rejected by the admin.' });
     }
 
