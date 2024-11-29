@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { IoMenu } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
 import { Link } from "react-router-dom";
@@ -6,6 +7,32 @@ import { Link } from "react-router-dom";
 const Navbar = () => {
   const [nav, setNav] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Track if the user is logged in
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check localStorage for user login status
+    const user = localStorage.getItem('role'); // Or use 'user' key if you store user details
+    setIsLoggedIn(!!user); // Set to true if user exists
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/logout', {
+        method: 'POST',
+        credentials: 'include', // Include cookies for session handling
+      });
+  
+      if (response.ok) {
+        localStorage.removeItem('role'); // Clear user role from localStorage
+        setIsLoggedIn(true); // Update state
+        navigate('/auth'); // Redirect to homepage
+      } else {
+        console.error('Failed to log out.');
+      }
+    } catch (error) {
+      console.error('Network error during logout:', error);
+    }
+  };
 
   const handleNav = () => {
     setNav(!nav);
@@ -46,18 +73,27 @@ const Navbar = () => {
           <Link to="/contact">
             <button className="p-4">Contact</button>
           </Link>
+          <Link to="/admin">
+            <button className="p-4">Admin</button>
+          </Link>
 
-          {isLoggedIn ? (
-            // Show Profile button if logged in
-            <Link to="/profile">
-              <button className="p-4">Profile</button>
+          {!isLoggedIn ? (
+          <Link to="/auth" className="bg-green-400 px-4 py-2 rounded hover:bg-red-500">
+            Signup/Login
+          </Link>
+        ) : (
+          <>
+            <Link to="/profile" className="bg-green-400 px-3 py-4 rounded hover:bg-red-500">
+              Profile Page
             </Link>
-          ) : (
-            // Show Login/Signup button if not logged in
-            <Link to="/auth">
-              <button className="p-4">Login/Signup</button>
-            </Link>
-          )}
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 px-4 py-2 rounded hover:bg-red-600"
+            >
+              Logout
+            </button>
+          </>
+        )}
         </ul>
 
         {/* Mobile menu toggle */}
