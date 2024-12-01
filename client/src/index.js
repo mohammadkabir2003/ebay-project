@@ -10,6 +10,7 @@ import AdminDash from "./pages/AdminDash";
 //import reportWebVitals from "./reportWebVitals";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Rating from "./pages/Rating";
 const router = createBrowserRouter([
   //{ path: "/", element: <LandingPage /> },
   {
@@ -32,6 +33,9 @@ const router = createBrowserRouter([
     path: "admin",
     element: <AdminDash />,
   },
+  {path: "rating",
+    element: <Rating />,
+  }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
