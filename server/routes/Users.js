@@ -130,4 +130,22 @@ router.post('/opt-out', isUser, (req, res) => {
   });
 });
 
+// Get details of the logged-in user
+router.get('/userprofile', (req, res) => {
+  const userId = req.session.user.id; // Get user ID from the session
+
+  const query = `SELECT name, username, balance FROM users WHERE id = ?`;
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(results[0]); // Send the user details
+  });
+});
+
 module.exports = router;
