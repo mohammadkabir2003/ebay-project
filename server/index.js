@@ -15,9 +15,6 @@ app.use(cors({
   credentials: true,
 }));
 
-// Middleware to parse JSON request bodies
-app.use(bodyParser.json());
-
 
 app.use(
   session({
@@ -31,7 +28,7 @@ app.use(usersRouter);
 app.use(adminRouter);
 
 // Start the server
-app.listen(3000, () => {
-  console.log(`Server is running on port 3000`);
+app.listen(3001, () => {
+  console.log(`Server is running on port 3001`);
 });
 

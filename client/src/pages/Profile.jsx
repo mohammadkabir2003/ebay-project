@@ -14,7 +14,7 @@ const Profile = ({ userType }) => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await fetch('http://localhost:3000/userprofile', {
+        const response = await fetch('http://localhost:3001/userprofile', {
           method: 'GET',
           credentials: 'include', // Include session cookies
         });
@@ -38,7 +38,7 @@ const Profile = ({ userType }) => {
 
   const handleOptOut = async () => {
     try {
-      const response = await fetch('http://localhost:3000/opt-out', {
+      const response = await fetch('http://localhost:3001/opt-out', {
         method: 'POST',
         credentials: 'include', // Include session cookies
       });

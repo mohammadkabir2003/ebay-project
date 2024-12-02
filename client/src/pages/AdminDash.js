@@ -8,7 +8,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     // Fetch session data
-    fetch('http://localhost:3000/session', { credentials: 'include' }) // Include credentials for session cookies
+    fetch('http://localhost:3001/session', { credentials: 'include' }) // Include credentials for session cookies
       .then((res) => {
         if (!res.ok) {
           throw new Error('Failed to fetch session data'); // Handle non-200 responses
@@ -41,14 +41,28 @@ const AdminDashboard = () => {
 
   // Fetch pending users on component mount
   useEffect(() => {
-    fetch('http://localhost:3000/admin/pending-users')
-      .then((res) => res.json())
-      .then((data) => setPendingUsers(data))
-      .catch((err) => console.error('Error fetching users:', err));
+    fetch('http://localhost:3001/admin/pending-users', {
+      credentials: 'include'  // Add this to include session cookies
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch pending users');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        // Ensure data is an array
+        const users = Array.isArray(data) ? data : [];
+        setPendingUsers(users);
+      })
+      .catch((err) => {
+        console.error('Error fetching users:', err);
+        setPendingUsers([]); // Set to empty array on error
+      });
   }, []);
 
   const updateStatus = (userId, status) => {
-    fetch('http://localhost:3000/admin/update-status', {
+    fetch('http://localhost:3001/admin/update-status', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, status }),
@@ -64,14 +78,27 @@ const AdminDashboard = () => {
   const [leavingUsers, setLeavingUsers] = useState([]);
    // Fetch leaving users on component mount
    useEffect(() => {
-    fetch('http://localhost:3000/admin/leaving-users')
-      .then((res) => res.json())
-      .then((data) => setLeavingUsers(data))
-      .catch((err) => console.error('Error fetching users:', err));
+    fetch('http://localhost:3001/admin/leaving-users', {
+      credentials: 'include'
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch leaving users');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const users = Array.isArray(data) ? data : [];
+        setLeavingUsers(users);
+      })
+      .catch((err) => {
+        console.error('Error fetching users:', err);
+        setLeavingUsers([]); // Set to empty array on error
+      });
   }, []);
 
   const leaveSystem = (userId) => {
-    fetch('http://localhost:3000/admin/opt-out', {
+    fetch('http://localhost:3001/admin/opt-out', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId}),
