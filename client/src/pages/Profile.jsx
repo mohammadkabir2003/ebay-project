@@ -40,6 +40,28 @@ const Profile = ({ userType }) => {
     fetchProfileData();
   }, [userType]);
 
+  const [message, setMessage] = useState('');
+
+  const handleOptOut = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/opt-out', {
+        method: 'POST',
+        credentials: 'include', // Include session cookies
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to opt out.');
+      }
+
+      setMessage('You have successfully applied to opt-out of the system.');
+      // Redirect the user or disable certain actions
+    } catch (error) {
+      setMessage(error.message);
+    }
+  };
+
   return (
     <div>
       <Navbar />
@@ -93,6 +115,17 @@ const Profile = ({ userType }) => {
                   <p>No listings found.</p>
                 )}
               </div>
+
+              <div className="profile">
+                <h3 className="text-2xl font-semibold mb-4">System Settings</h3>
+                <button
+                onClick={handleOptOut}
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              >
+        Opt-Out of System
+      </button>
+      {message && <p className="mt-4 text-red-500">{message}</p>}
+    </div>
             </>
           )}
 

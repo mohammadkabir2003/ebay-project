@@ -60,6 +60,29 @@ const AdminDashboard = () => {
       })
       .catch((err) => console.error('Error updating status:', err));
   };
+  
+  const [leavingUsers, setLeavingUsers] = useState([]);
+   // Fetch leaving users on component mount
+   useEffect(() => {
+    fetch('http://localhost:3000/admin/leaving-users')
+      .then((res) => res.json())
+      .then((data) => setLeavingUsers(data))
+      .catch((err) => console.error('Error fetching users:', err));
+  }, []);
+
+  const leaveSystem = (userId) => {
+    fetch('http://localhost:3000/admin/opt-out', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId}),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        // Remove user from opt-out list after leaving system
+        setLeavingUsers((prev) => prev.filter((user) => user.id !== userId));
+      })
+      .catch((err) => console.error('Error leaving system:', err));
+  };
 
   if (loading) {
     // Show a loading message while session is being fetched
@@ -74,6 +97,7 @@ const AdminDashboard = () => {
         <h2 className="text-2xl font-bold text-center mb-6">Admin Dashboard</h2>
 
         {/* Pending Users Table */}
+        <h2 className="text-2xl font-bold text-center mb-6">User Registration Approval</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto border-collapse">
             <thead>
@@ -113,6 +137,48 @@ const AdminDashboard = () => {
                     className="border border-gray-300 p-2 text-center text-gray-500"
                   >
                     No pending users
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Leaving Users Table */}
+        <h2 className="text-2xl font-bold text-center mb-6">User Opt-Out Approval</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto border-collapse">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="border border-gray-300 p-2 text-left">Name</th>
+                <th className="border border-gray-300 p-2 text-left">Username</th>
+                <th className="border border-gray-300 p-2 text-left">Email</th>
+                <th className="border border-gray-300 p-2 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leavingUsers.map((user) => (
+                <tr key={user.id} className="bg-gray-50">
+                  <td className="border border-gray-300 p-2">{user.name}</td>
+                  <td className="border border-gray-300 p-2">{user.username}</td>
+                  <td className="border border-gray-300 p-2">{user.email}</td>
+                  <td className="border border-gray-300 p-2 text-center space-x-2">
+                    <button
+                      onClick={() => leaveSystem(user.id)}
+                      className="bg-green-600 text-white px-4 py-1 rounded-md"
+                    >
+                      Approve
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {leavingUsers.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="4"
+                    className="border border-gray-300 p-2 text-center text-gray-500"
+                  >
+                    No leaving users
                   </td>
                 </tr>
               )}

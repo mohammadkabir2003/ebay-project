@@ -43,7 +43,33 @@ adminrouter.post('/admin/update-status', isAdmin, (req, res) => {
       res.json({ message: `User ${status} successfully` });
   });
 });
-  
+
+adminrouter.get('/admin/leaving-users', isAdmin, isAuthenticated, (req, res) => {
+  const query = `SELECT id, name, username, email, status FROM users WHERE status = 'leave'`;
+  db.query(query, (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json(results);
+});
+});
+
+adminrouter.post('/admin/opt-out', isAdmin, (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required.' });
+  }
+
+  const query = `DELETE FROM users WHERE id = ? AND status = 'leave'`;
+  db.query(query, [userId], (err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    res.json({ message: `User left system successfully` });
+});
+});  
 
 
 module.exports = adminrouter;
