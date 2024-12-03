@@ -83,7 +83,7 @@ const Navbar = () => {
           </Link>
         ) : (
           <>
-            <Link to="/profile" className="bg-green-400 px-3 py-4 rounded hover:bg-red-500">
+            <Link to="/profile" className="bg-green-400 px-3 py-4 mx-2 rounded hover:bg-red-500">
               Profile Page
             </Link>
             <button
