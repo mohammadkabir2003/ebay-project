@@ -10,8 +10,9 @@ const Profile = ({ userType }) => {
 
   const [userDetails, setUserDetails] = useState(null);
   const [error, setError] = useState('');
+  const [amount, setAmount] = useState('');
 
-  useEffect(() => {
+
     const fetchUserDetails = async () => {
       try {
         const response = await fetch('http://localhost:3001/userprofile', {
@@ -30,7 +31,7 @@ const Profile = ({ userType }) => {
         setError(err.message);
       }
     };
-
+    useEffect(() => {
     fetchUserDetails();
   }, []);
 
@@ -56,10 +57,43 @@ const Profile = ({ userType }) => {
     }
   };
 
-    // Show a loading state while data is being fetched
-    if (!userDetails) {
-      return <p>Loading...</p>;
+  const handleBalance = async (type) => {
+    try {
+      const response = await fetch(`http://localhost:3001/${type}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ amount: parseFloat(amount) }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Transaction failed.');
+      }
+
+      setMessage(data.message);
+      setError('');
+
+      // Update the balance on the front-end
+      setUserDetails((prev) => ({
+        ...prev,
+        balance: type === 'deposit' 
+          ? prev.balance + parseFloat(amount) 
+          : prev.balance - parseFloat(amount),
+      }));
+      setAmount(''); // Clear the input
+      fetchUserDetails(); // Re-fetch the updated balance
+    } catch (err) {
+      setError(err.message);
+      setMessage('');
     }
+  };
+
+  // Show a loading state while data is being fetched
+  if (!userDetails) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div>
@@ -72,6 +106,33 @@ const Profile = ({ userType }) => {
         <p><strong>Name:</strong> {userDetails.name}</p>
         <p><strong>Username:</strong> {userDetails.username}</p>
         <p><strong>Balance:</strong> ${userDetails.balance}</p>
+      </div>
+            {/* Deposit/Withdrawal Section */}
+            <div className="mt-6 bg-white p-4 rounded shadow-md">
+        <h2 className="text-xl font-bold mb-4">Manage Balance</h2>
+        <input
+          type="number"
+          placeholder="Enter amount"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          className="border border-gray-300 p-2 w-full mb-4 rounded-md"
+        />
+        <div className="space-x-4">
+          <button
+            onClick={() => handleBalance('deposit')}
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          >
+            Deposit
+          </button>
+          <button
+            onClick={() => handleBalance('withdraw')}
+            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+          >
+            Withdraw
+          </button>
+        </div>
+        {message && <p className="mt-4 text-green-500">{message}</p>}
+        {error && <p className="mt-4 text-red-500">{error}</p>}
       </div>
 
           {/* Regular User Content */}

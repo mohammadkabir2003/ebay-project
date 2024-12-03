@@ -148,4 +148,48 @@ router.get('/userprofile', (req, res) => {
   });
 });
 
+// Route to deposit funds
+router.post('/deposit', (req, res) => {
+  const userId = req.session.user.id;
+  const { amount } = req.body;
+
+  if (amount <= 0) {
+    return res.status(400).json({ error: 'Invalid deposit amount.' });
+  }
+
+  const query = `UPDATE users SET balance = balance + ? WHERE id = ?`;
+  db.query(query, [amount, userId], (err, result) => {
+    if (err) {
+      console.error('Database error:', err.message);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    res.json({ message: 'Deposit successful!' });
+  });
+});
+
+// Route to withdraw funds
+router.post('/withdraw', (req, res) => {
+  const userId = req.session.user.id;
+  const { amount } = req.body;
+
+  if (amount <= 0) {
+    return res.status(400).json({ error: 'Invalid withdrawal amount.' });
+  }
+
+  const query = `UPDATE users SET balance = balance - ? WHERE id = ? AND balance >= ?`;
+  db.query(query, [amount, userId, amount], (err, result) => {
+    if (err) {
+      console.error('Database error:', err.message);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(400).json({ error: 'Insufficient balance.' });
+    }
+
+    res.json({ message: 'Withdrawal successful!' });
+  });
+});
+
 module.exports = router;
