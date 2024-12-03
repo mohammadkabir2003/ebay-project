@@ -66,6 +66,7 @@ const AdminDashboard = () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, status }),
+      credentials: 'include',
     })
       .then((res) => res.json())
       .then(() => {
@@ -102,6 +103,7 @@ const AdminDashboard = () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId}),
+      credentials: 'include',
     })
       .then((res) => res.json())
       .then(() => {
