@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 //import { ReactTyped } from "react-typed";
 //import bgpic from './asset/bg_picIV.jpg'
 
@@ -16,9 +17,10 @@ const Hero = () => {
       <p className="text-lg md:text-xl max-w-xl text-center mb-6">
         With E-Bidding, you can access a wide range of categories, track your bids, and stay informed of auction results — all in one place.
       </p>
+      <Link to="/listings">
       <button className="bg-white text-blue-600 px-6 py-3 rounded-md font-semibold hover:bg-blue-100 transition duration-300">
         Get Started
-      </button>
+      </button></Link>
     </div>
   );
 };
