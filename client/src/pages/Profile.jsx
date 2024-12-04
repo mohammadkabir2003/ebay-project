@@ -86,10 +86,10 @@ const Profile = ({ userType }) => {
     }
   };
 
-    // Show a loading state while data is being fetched
-    if (!userDetails) {
-      return <p>Loading...</p>;
-    }
+  // Show a loading state while data is being fetched
+  if (!userDetails) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div>
