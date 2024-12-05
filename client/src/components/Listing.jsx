@@ -114,7 +114,7 @@ const Listing = ({ listing }) => {
           >
             {isMaxReached ? 'Max Bid Reached' : 'Place Bid'}
           </button>
-          {message && <p className="mt-2 text-sm text-green-500">{message}</p>}
+          {message && <p className="mt-2 text-sm text-black-500">{message}</p>}
         </div>
       </div>
     </div>

@@ -40,7 +40,22 @@ bidrouter.get('/bids', (req, res) => {
       return res.status(403).json({ error: 'Sellers cannot bid on their own listings.' });
     }
 
+      // Check if the user has sufficient balance
+      const balanceQuery = `SELECT balance FROM users WHERE id = ?`;
+      db.query(balanceQuery, [userId], (err, userResults) => {
+        if (err) {
+          return res.status(500).json({ error: 'Database error' });
+        }
   
+        if (userResults.length === 0) {
+          return res.status(404).json({ error: 'User not found' });
+        }
+  
+        const userBalance = userResults[0].balance;
+        if (userBalance < amount) {
+          return res.status(400).json({ error: 'Insufficient balance to place this bid.' });
+      }
+
     // Check if the bid is valid
     const query = `SELECT min_bid, max_bid FROM listings WHERE id = ?`;
     db.query(query, [id], (err, results) => {
@@ -92,6 +107,7 @@ bidrouter.get('/bids', (req, res) => {
     });
   });
   });
+});
   
   // Route to fetch the current highest bid for a listing
   bidrouter.get('/listings/:id/highest-bid', (req, res) => {
