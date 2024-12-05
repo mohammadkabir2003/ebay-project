@@ -17,7 +17,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:3000/logout', {
+      const response = await fetch('http://localhost:3001/logout', {
         method: 'POST',
         credentials: 'include', // Include cookies for session handling
       });
@@ -87,7 +87,7 @@ const Navbar = () => {
           </Link>
         ) : (
           <>
-            <Link to="/profile" className="bg-green-400 px-3 py-4 rounded hover:bg-red-500">
+            <Link to="/profile" className="bg-green-400 px-3 py-4 mx-2 rounded hover:bg-red-500">
               Profile Page
             </Link>
             <button

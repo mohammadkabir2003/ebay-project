@@ -45,14 +45,19 @@ router.post('/login', (req, res) => {
 
     const user = results[0];
 
-    // Check if the user is approved or rejected
+    // Check if the user is rejected
     if (user.status === 'rejected') {
       return res.status(403).json({ error: 'Your account has been rejected by the admin.' });
     }
 
-    // Check if the user is approved
+    // Check if the user is pending
+    if (user.status === 'pending') {
+      return res.status(403).json({ error: 'User not approved, awaiting admin approval.' });
+    }
+
+    // Check if the user is pending
     if (user.status !== 'approved') {
-      return res.status(403).json({ error: 'User not approved' });
+      return res.status(403).json({ error: 'User must be approved to login' });
     }
 
     // Compare the password
@@ -100,5 +105,84 @@ router.get('/session', (req, res) => {
   }
 });
 
+const isUser = (req, res, next) => {
+  if (!req.session || !req.session.user || req.session.user.role !== 'user') {
+    return res.status(403).json({ error: 'Access denied. Users only.' });
+  }
+  next();
+};
+
+// Route to update user's status to "leave"
+router.post('/opt-out', isUser, (req, res) => {
+  const userId = req.session.user.id; // Get user ID from the session
+
+  const query = `UPDATE users SET status = 'leave' WHERE id = ?`;
+  db.query(query, [userId], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found or already opted out.' });
+    }
+
+    res.json({ message: 'You have successfully opted out of the system.' });
+  });
+});
+
+// Get details of the logged-in user
+router.get('/userprofile', (req, res) => {
+  const userId = req.session.user.id; // Get user ID from the session
+
+  const query = `SELECT name, username, balance FROM users WHERE id = ?`;
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json(results[0]); // Send the user details
+  });
+});
+
+// Route to deposit funds
+router.post('/deposit', (req, res) => {
+  const userId = req.session.user.id;
+  const { amount } = req.body;
+  if (amount <= 0) {
+    return res.status(400).json({ error: 'Invalid deposit amount.' });
+  }
+  const query = `UPDATE users SET balance = balance + ? WHERE id = ?`;
+  db.query(query, [amount, userId], (err, result) => {
+    if (err) {
+      console.error('Database error:', err.message);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    res.json({ message: 'Deposit successful!' });
+  });
+});
+
+// Route to withdraw funds
+router.post('/withdraw', (req, res) => {
+  const userId = req.session.user.id;
+  const { amount } = req.body;
+  if (amount <= 0) {
+    return res.status(400).json({ error: 'Invalid withdrawal amount.' });
+  }
+  const query = `UPDATE users SET balance = balance - ? WHERE id = ? AND balance >= ?`;
+  db.query(query, [amount, userId, amount], (err, result) => {
+    if (err) {
+      console.error('Database error:', err.message);
+      return res.status(500).json({ error: 'Database error' });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(400).json({ error: 'Insufficient balance.' });
+    }
+    res.json({ message: 'Withdrawal successful!' });
+  });
+});
 
 module.exports = router;

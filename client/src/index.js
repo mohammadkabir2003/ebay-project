@@ -6,10 +6,11 @@ import Profile from "./pages/Profile";
 import Contact from "./pages/Contact";
 import Authentication from "./pages/Authentication";
 import AdminDash from "./pages/AdminDash";
-
+import Listings from "./pages/Listings";
 //import reportWebVitals from "./reportWebVitals";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import AddListing from "./pages/AddListing";
 import Rating from "./pages/Rating";
 const router = createBrowserRouter([
   //{ path: "/", element: <LandingPage /> },
@@ -32,6 +33,14 @@ const router = createBrowserRouter([
   {
     path: "admin",
     element: <AdminDash />,
+  },
+  {
+    path: "listings",
+    element: <Listings />,
+  },
+  {
+    path: "add-listing",
+    element: <AddListing />,
   },
   {path: "rating",
     element: <Rating />,

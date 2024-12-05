@@ -8,7 +8,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     // Fetch session data
-    fetch('http://localhost:3000/session', { credentials: 'include' }) // Include credentials for session cookies
+    fetch('http://localhost:3001/session', { credentials: 'include' }) // Include credentials for session cookies
       .then((res) => {
         if (!res.ok) {
           throw new Error('Failed to fetch session data'); // Handle non-200 responses
@@ -41,17 +41,32 @@ const AdminDashboard = () => {
 
   // Fetch pending users on component mount
   useEffect(() => {
-    fetch('http://localhost:3000/admin/pending-users')
-      .then((res) => res.json())
-      .then((data) => setPendingUsers(data))
-      .catch((err) => console.error('Error fetching users:', err));
+    fetch('http://localhost:3001/admin/pending-users', {
+      credentials: 'include'  // Add this to include session cookies
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch pending users');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        // Ensure data is an array
+        const users = Array.isArray(data) ? data : [];
+        setPendingUsers(users);
+      })
+      .catch((err) => {
+        console.error('Error fetching users:', err);
+        setPendingUsers([]); // Set to empty array on error
+      });
   }, []);
 
   const updateStatus = (userId, status) => {
-    fetch('http://localhost:3000/admin/update-status', {
+    fetch('http://localhost:3001/admin/update-status', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, status }),
+      credentials: 'include',
     })
       .then((res) => res.json())
       .then(() => {
@@ -59,6 +74,43 @@ const AdminDashboard = () => {
         setPendingUsers((prev) => prev.filter((user) => user.id !== userId));
       })
       .catch((err) => console.error('Error updating status:', err));
+  };
+  
+  const [leavingUsers, setLeavingUsers] = useState([]);
+   // Fetch leaving users on component mount
+   useEffect(() => {
+    fetch('http://localhost:3001/admin/leaving-users', {
+      credentials: 'include'
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch leaving users');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const users = Array.isArray(data) ? data : [];
+        setLeavingUsers(users);
+      })
+      .catch((err) => {
+        console.error('Error fetching users:', err);
+        setLeavingUsers([]); // Set to empty array on error
+      });
+  }, []);
+
+  const leaveSystem = (userId) => {
+    fetch('http://localhost:3001/admin/opt-out', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId}),
+      credentials: 'include',
+    })
+      .then((res) => res.json())
+      .then(() => {
+        // Remove user from opt-out list after leaving system
+        setLeavingUsers((prev) => prev.filter((user) => user.id !== userId));
+      })
+      .catch((err) => console.error('Error leaving system:', err));
   };
 
   if (loading) {
@@ -74,6 +126,7 @@ const AdminDashboard = () => {
         <h2 className="text-2xl font-bold text-center mb-6">Admin Dashboard</h2>
 
         {/* Pending Users Table */}
+        <h2 className="text-2xl font-bold text-center mb-6">User Registration Approval</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto border-collapse">
             <thead>
@@ -113,6 +166,48 @@ const AdminDashboard = () => {
                     className="border border-gray-300 p-2 text-center text-gray-500"
                   >
                     No pending users
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Leaving Users Table */}
+        <h2 className="text-2xl font-bold text-center mb-6">User Opt-Out Approval</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto border-collapse">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="border border-gray-300 p-2 text-left">Name</th>
+                <th className="border border-gray-300 p-2 text-left">Username</th>
+                <th className="border border-gray-300 p-2 text-left">Email</th>
+                <th className="border border-gray-300 p-2 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leavingUsers.map((user) => (
+                <tr key={user.id} className="bg-gray-50">
+                  <td className="border border-gray-300 p-2">{user.name}</td>
+                  <td className="border border-gray-300 p-2">{user.username}</td>
+                  <td className="border border-gray-300 p-2">{user.email}</td>
+                  <td className="border border-gray-300 p-2 text-center space-x-2">
+                    <button
+                      onClick={() => leaveSystem(user.id)}
+                      className="bg-green-600 text-white px-4 py-1 rounded-md"
+                    >
+                      Approve
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {leavingUsers.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="4"
+                    className="border border-gray-300 p-2 text-center text-gray-500"
+                  >
+                    No leaving users
                   </td>
                 </tr>
               )}

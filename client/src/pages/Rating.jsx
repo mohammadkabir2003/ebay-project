@@ -10,7 +10,7 @@ const Rating = () => {
 
     // Fetch pending users on component mount
     useEffect(() => {
-        fetch('http://localhost:3000/users')
+        fetch('http://localhost:3001/users')
         .then((res) => res.json())
         .then((data) => setPendingUsers(data))
         .catch((err) => console.error('Error fetching users:', err));

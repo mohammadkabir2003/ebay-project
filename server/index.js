@@ -5,6 +5,8 @@ const cors = require('cors'); // Import the cors middleware
 const db = require('./db.js'); // Import the MySQL connection pool from db.js
 const usersRouter = require('./routes/Users'); // Import the users router
 const adminRouter = require('./routes/Admin'); // Import the admin router
+const bidRouter = require('./routes/Bids'); // Import the bids router
+const listingsRouter = require('./routes/Listings');
 
 const app = express();
 
@@ -14,9 +16,6 @@ app.use(cors({
   origin: 'http://localhost:3000',  // Allow requests from React app
   credentials: true,
 }));
-
-// Middleware to parse JSON request bodies
-app.use(bodyParser.json());
 
 
 app.use(
@@ -29,9 +28,11 @@ app.use(
 
 app.use(usersRouter);
 app.use(adminRouter);
+app.use('/listings', listingsRouter);
+app.use(bidRouter);
 
 // Start the server
-app.listen(3000, () => {
-  console.log(`Server is running on port 3000`);
+app.listen(3001, () => {
+  console.log(`Server is running on port 3001`);
 });
 
