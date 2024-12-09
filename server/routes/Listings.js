@@ -8,6 +8,7 @@ router.get('/', (req, res) => {
         SELECT listings.*, users.name AS user_name
         FROM listings
         JOIN users ON listings.user_id = users.id
+        WHERE listings.status != 'sold'
     `;
     db.query(query, (err, results) => {
       if (err) {

@@ -93,6 +93,26 @@ bidrouter.get('/bids', (req, res) => {
         if (amount > max_bid) {
           return res.status(400).json({ error: `Bid cannot exceed the maximum bid: $${max_bid}` });
         }
+
+          // Check if the listing is pending
+  const checkListingStatusQuery = `
+  SELECT status FROM listings WHERE id = ?
+`;
+db.query(checkListingStatusQuery, [id], (err, results) => {
+  if (err) {
+    return res.status(500).json({ error: 'Database error' });
+  }
+
+  if (results.length === 0) {
+    return res.status(404).json({ error: 'Listing not found' });
+  }
+
+  const listingStatus = results[0].status;
+
+  // Prevent bidding if the listing is pending
+  if (listingStatus === 'pending') {
+    return res.status(400).json({ error: 'Bidding is not allowed on pending listings.' });
+  }
   
         // Insert the bid
         const insertQuery = `INSERT INTO bids (listing_id, user_id, amount) VALUES (?, ?, ?)`;
@@ -100,6 +120,18 @@ bidrouter.get('/bids', (req, res) => {
           if (err) {
             return res.status(500).json({ error: 'Failed to place bid' });
           }
+
+          const updateListingQuery = `
+          UPDATE listings
+          SET highest_bidder_id = ?
+          WHERE id = ?
+        `;
+        db.query(updateListingQuery, [userId, id], (err) => {
+          if (err) {
+            return res.status(500).json({ error: 'Failed to update highest bidder' });
+          }
+
+
   
           res.json({ message: 'Bid placed successfully!', highest_bid: amount });
         });
@@ -107,6 +139,8 @@ bidrouter.get('/bids', (req, res) => {
     });
   });
   });
+});
+});
 });
   
   // Route to fetch the current highest bid for a listing

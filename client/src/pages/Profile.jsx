@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import SellerListings from './SellerProfile';
+import BuyerTransaction from './BuySection';
+import CompletedTransactions from './PreviousItems';
 
 const Profile = ({ userType }) => {
   const [userInfo, setUserInfo] = useState(null);
@@ -138,13 +141,19 @@ const Profile = ({ userType }) => {
               
               {/* User Biddings */}
               <div className="mb-8">
-                <h3 className="text-2xl font-semibold mb-4">My Biddings</h3>
-
+                <h3 className="text-2xl font-semibold mb-4">Previously Bought</h3>
+                <CompletedTransactions />
               </div>
 
               {/* User Listings */}
               <div>
-                <h3 className="text-2xl font-semibold mb-4">My Listings</h3>
+              <SellerListings />
+
+              </div>
+
+              {/* Buyer Content */}
+              <div>
+              <BuyerTransaction />
 
               </div>
 

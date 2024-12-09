@@ -7,6 +7,7 @@ const usersRouter = require('./routes/Users'); // Import the users router
 const adminRouter = require('./routes/Admin'); // Import the admin router
 const bidRouter = require('./routes/Bids'); // Import the bids router
 const listingsRouter = require('./routes/Listings');
+const sellerRouter = require('./routes/Seller');
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use(usersRouter);
 app.use(adminRouter);
 app.use('/listings', listingsRouter);
 app.use(bidRouter);
+app.use(sellerRouter);
 
 // Start the server
 app.listen(3001, () => {
