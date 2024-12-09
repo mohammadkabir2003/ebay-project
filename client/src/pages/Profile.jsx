@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import SellerListings from './SellerProfile';
-import BuyerTransaction from './BuySection';
 import CompletedTransactions from './PreviousItems';
 
 const Profile = ({ userType }) => {
@@ -105,6 +103,8 @@ const Profile = ({ userType }) => {
         <p><strong>Name:</strong> {userDetails.name}</p>
         <p><strong>Username:</strong> {userDetails.username}</p>
         <p><strong>Balance:</strong> ${userDetails.balance}</p>
+        <p><strong>Transaction Count:</strong> {userDetails.transactions}</p>
+      <p><strong>VIP Status:</strong> {userDetails.is_vip ? 'Yes' : 'No'}</p>
       </div>
 
         {/* Deposit/Withdrawal Section */}
@@ -147,13 +147,13 @@ const Profile = ({ userType }) => {
 
               {/* User Listings */}
               <div>
-              <SellerListings />
+              
 
               </div>
 
               {/* Buyer Content */}
               <div>
-              <BuyerTransaction />
+              
 
               </div>
 

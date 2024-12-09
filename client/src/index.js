@@ -12,6 +12,7 @@ import Listings from "./pages/Listings";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AddListing from "./pages/AddListing";
 import Rating from "./pages/Rating";
+import Transaction from "./pages/Transaction";
 const router = createBrowserRouter([
   //{ path: "/", element: <LandingPage /> },
   {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
   {
     path: "add-listing",
     element: <AddListing />,
+  },
+  {
+    path: "buy",
+    element: <Transaction />,
   },
   {path: "rating",
     element: <Rating />,

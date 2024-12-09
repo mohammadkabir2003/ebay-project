@@ -134,7 +134,7 @@ router.post('/opt-out', isUser, (req, res) => {
 router.get('/userprofile', (req, res) => {
   const userId = req.session.user.id; // Get user ID from the session
 
-  const query = `SELECT name, username, balance FROM users WHERE id = ?`;
+  const query = `SELECT name, username, balance, transactions, is_vip FROM users WHERE id = ?`;
   db.query(query, [userId], (err, results) => {
     if (err) {
       return res.status(500).json({ error: 'Database error' });
