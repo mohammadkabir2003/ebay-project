@@ -6,8 +6,9 @@ const db = require('./db.js'); // Import the MySQL connection pool from db.js
 const usersRouter = require('./routes/Users'); // Import the users router
 const adminRouter = require('./routes/Admin'); // Import the admin router
 const bidRouter = require('./routes/Bids'); // Import the bids router
-const listingsRouter = require('./routes/Listings');
-const sellerRouter = require('./routes/Seller');
+const listingsRouter = require('./routes/Listings'); // Import the listings router
+const sellerRouter = require('./routes/Seller'); // Import the seller router
+const ratingRouter = require('./routes/Rating'); // Import the rating router
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use(adminRouter);
 app.use('/listings', listingsRouter);
 app.use(bidRouter);
 app.use(sellerRouter);
+app.use(ratingRouter);
 
 // Start the server
 app.listen(3001, () => {
