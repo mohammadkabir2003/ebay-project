@@ -76,6 +76,10 @@ const Navbar = () => {
           <Link to="/admin">
             <button className="p-4">Admin</button>
           </Link>
+          <Link to="/rating">
+            <button className="p-4">Rating</button>
+          </Link>
+
 
           {!isLoggedIn ? (
           <Link to="/auth" className="bg-green-400 px-3 py-4 rounded hover:bg-red-500">

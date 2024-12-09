@@ -11,6 +11,7 @@ import Listings from "./pages/Listings";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AddListing from "./pages/AddListing";
+import Rating from "./pages/Rating";
 const router = createBrowserRouter([
   //{ path: "/", element: <LandingPage /> },
   {
@@ -41,6 +42,9 @@ const router = createBrowserRouter([
     path: "add-listing",
     element: <AddListing />,
   },
+  {path: "rating",
+    element: <Rating />,
+  }
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
