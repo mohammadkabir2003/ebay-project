@@ -50,6 +50,10 @@ router.post('/login', (req, res) => {
       return res.status(403).json({ error: 'Your account has been rejected by the admin.' });
     }
 
+    if (user.status === 'suspended') {
+      return res.status(403).json({ redirect: '/suspended' }); // Send redirect instruction
+    }
+
     // Check if the user is pending
     if (user.status === 'pending') {
       return res.status(403).json({ error: 'User not approved, awaiting admin approval.' });
