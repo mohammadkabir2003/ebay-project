@@ -145,9 +145,14 @@ router.post('/ratings', async (req, res) => {
           const suspensionCheck = await new Promise((resolve, reject) => {
             db.query(
               `
-              SELECT AVG(CAST(rating AS SIGNED)) AS average_rating, COUNT(*) AS rating_count
-              FROM ratings
-              WHERE ratee_id = ?`,
+      SELECT 
+        AVG(CAST(rating AS SIGNED)) AS average_rating, 
+        COUNT(*) AS rating_count, 
+        users.is_vip
+      FROM ratings
+      INNER JOIN users ON users.id = ratings.ratee_id
+      WHERE ratee_id = ?
+      GROUP BY users.id`,
               [rateeId],
               (err, results) => {
                 if (err) {
@@ -158,9 +163,28 @@ router.post('/ratings', async (req, res) => {
               }
             );
           });
-          const { average_rating, rating_count } = suspensionCheck;
+          const { average_rating, rating_count, is_vip } = suspensionCheck;
+          
           //if too mean or too nice --> get suspended
           if ((rating_count >= 3 && average_rating < 2) || rating_count >= 3 && average_rating > 4) {
+            if (is_vip) {
+            console.log(`User with ID ${rateeId} lost VIP status.`);
+            // Add your suspension logic here, such as updating the user's status in the database
+            await new Promise((resolve, reject) => {
+              db.query(
+                'UPDATE users SET is_vip = FALSE, suspensions = suspensions + 1 WHERE id = ?',
+                [rateeId],
+                (err, result) => {
+                  if (err) {
+                    reject(err);
+                  } else {
+                    resolve(result);
+                  }
+                }
+              );
+            });
+          }
+          else {
             console.log(`User with ID ${rateeId} should be suspended.`);
             // Add your suspension logic here, such as updating the user's status in the database
             await new Promise((resolve, reject) => {
@@ -176,6 +200,7 @@ router.post('/ratings', async (req, res) => {
                 }
               );
             });
+          }
           }
         }    
 
