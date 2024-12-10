@@ -7,6 +7,7 @@ import Contact from "./pages/Contact";
 import Authentication from "./pages/Authentication";
 import AdminDash from "./pages/AdminDash";
 import Listings from "./pages/Listings";
+import Suspended from "./pages/Suspended";
 //import reportWebVitals from "./reportWebVitals";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
   },
   {path: "rating",
     element: <Rating />,
+  },
+  {
+    path: "suspended",
+    element: <Suspended />,
   }
 ]);
 
