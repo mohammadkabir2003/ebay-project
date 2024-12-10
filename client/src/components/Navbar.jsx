@@ -64,15 +64,10 @@ const Navbar = () => {
     <div className="bg-white w-full">
       <div className="flex justify-between items-center h-20 max-w-[1240px] mx-auto px-6 text-black font-bold">
         <div className="w-40">
-          <button className="p-4">E-BIDDING</button>
+          <Link to="/">
+          <button className="p-4">E-BIDDING</button></Link>
         </div>
         <ul className="hidden md:flex">
-          <Link to="/">
-            <button className="p-4">Home</button>
-          </Link>
-          <Link to="/contact">
-            <button className="p-4">Contact</button>
-          </Link>
 
 
           {!isLoggedIn ? (
@@ -81,6 +76,9 @@ const Navbar = () => {
           </Link>
         ) : (
           <>
+          <Link to="/listings">
+            <button className="p-4">Listings</button>
+          </Link>
           <Link to="/buy">
             <button className="p-4">Buy/Sell</button>
           </Link>
