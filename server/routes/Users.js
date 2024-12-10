@@ -55,12 +55,6 @@ router.post('/login', (req, res) => {
       return res.status(403).json({ error: 'User not approved, awaiting admin approval.' });
     }
 
-    // Check if the user is suspended and redirect to suspended page
-    if (user.status === 'suspended') {
-      req.session.user = { id: user.id, username: user.username, role: user.role };
-      return res.status(403).json({ redirect: '/suspended' }); // Send redirect instruction
-    }
-
     // Check if the user is banned
     if (user.status === 'banned') {
       return res.status(403).json({ error: 'User has been permanently banned.' });
@@ -76,6 +70,12 @@ router.post('/login', (req, res) => {
     });
     return res.status(403).json({ error: 'User has been permanently banned after three suspensions.' });
   } 
+
+    // Check if the user is suspended and redirect to suspended page
+    if (user.status === 'suspended') {
+        req.session.user = { id: user.id, username: user.username, role: user.role };
+      return res.status(403).json({ redirect: '/suspended' }); // Send redirect instruction
+    }
 
     // Check if the user is pending
     if (user.status !== 'approved') {
