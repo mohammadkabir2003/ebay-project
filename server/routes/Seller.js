@@ -123,6 +123,48 @@ sellerRouter.get('/transaction', isAuthenticated, (req, res) => {
     });
   });
 
+  const updateVipStatus = async (userId) => {
+    try {
+      // Query to check user details
+      const query = `
+        SELECT 
+          balance, 
+          transactions,
+          complaints
+        FROM users 
+        WHERE id = ?
+      `;
+  
+      db.query(query, [userId], (err, results) => {
+        if (err) {
+          console.error('Database error:', err);
+          return; // Stop execution on error
+        }
+    
+        if (results.length === 0) {
+          console.log('User not found.');
+          return; // Stop execution if user is not found
+        }
+    
+        const { balance, transactions, complaints } = results[0];
+        const isVip = balance > 5000 && transactions > 5 && complaints === 0;
+    
+        // Update the user's VIP status
+        const updateQuery = `UPDATE users SET is_vip = ? WHERE id = ?`;
+        db.query(updateQuery, [isVip, userId], (updateErr) => {
+          if (updateErr) {
+            console.error('Error updating VIP status:', updateErr);
+            return; // Stop execution on error
+          }
+    
+          console.log(`User ID ${userId}: VIP status updated to ${isVip}`);
+        });
+      });
+    } catch (error) {
+      console.error('Error updating VIP status:', error);
+    };
+  };
+
   sellerRouter.post('/transaction/:id/confirm', isAuthenticated, (req, res) => {
     const transactionId = req.params.id;
     console.log('Transaction ID:', transactionId);  // Log to check its value
@@ -149,6 +191,21 @@ sellerRouter.get('/transaction', isAuthenticated, (req, res) => {
       
   
       const { buyer_id, seller_id, amount } = results[0];
+
+          // Check if the buyer is a VIP
+    const vipQuery = `SELECT is_vip FROM users WHERE id = ?`;
+    db.query(vipQuery, [buyer_id], (vipErr, vipResults) => {
+      if (vipErr) {
+        console.error('Database error:', vipErr);
+        return res.status(500).json({ error: 'Failed to check VIP status.' });
+      }
+
+      if (vipResults.length === 0) {
+        return res.status(404).json({ error: 'Buyer not found.' });
+      }
+
+      const isVip = vipResults[0].is_vip;
+      const finalAmount = isVip ? amount * 0.9 : amount; // Apply 10% discount if VIP
   
       // Continue with balance update and transaction confirmation...
       const updateTransactionQuery = `
@@ -174,7 +231,7 @@ sellerRouter.get('/transaction', isAuthenticated, (req, res) => {
           WHERE id IN (?, ?)
         `;
   
-        db.query(updateBalancesQuery, [buyer_id, amount, seller_id, amount, buyer_id, seller_id], (err) => {
+        db.query(updateBalancesQuery, [buyer_id, finalAmount, seller_id, finalAmount, buyer_id, seller_id], (err) => {
           if (err) {
             console.error('Error updating balances:', err);
             return res.status(500).json({ error: 'Failed to update balances.' });
@@ -208,11 +265,31 @@ sellerRouter.get('/transaction', isAuthenticated, (req, res) => {
         return res.status(500).json({ error: 'Failed to update listing status.' });
       }
 
+            // Increment the buyer's transaction count
+            const incrementTransactionCountQuery = `
+            UPDATE users 
+            SET transactions = transactions + 1 
+            WHERE id = ?
+          `;
   
-          res.json({ message: 'Transaction confirmed and balances updated successfully.' });
+          db.query(incrementTransactionCountQuery, [buyer_id], (err) => {
+            if (err) {
+              
+                console.error('Error incrementing transaction count:', incrementErr);
+                return res.status(500).json({ error: 'Failed to update buyer transaction count.' });
+              
+            }
+
+                  // Update VIP status for buyer
+                  updateVipStatus(buyer_id);
+
+  
+                  res.json({ message: `Transaction confirmed successfully. Final amount: $${finalAmount.toFixed(2)}`, finalAmount });
         });
       });
     });
+  });
+  });
   });
   });
   });

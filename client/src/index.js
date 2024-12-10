@@ -7,11 +7,13 @@ import Contact from "./pages/Contact";
 import Authentication from "./pages/Authentication";
 import AdminDash from "./pages/AdminDash";
 import Listings from "./pages/Listings";
+import Suspended from "./pages/Suspended";
 //import reportWebVitals from "./reportWebVitals";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AddListing from "./pages/AddListing";
 import Rating from "./pages/Rating";
+import Transaction from "./pages/Transaction";
 const router = createBrowserRouter([
   //{ path: "/", element: <LandingPage /> },
   {
@@ -42,8 +44,16 @@ const router = createBrowserRouter([
     path: "add-listing",
     element: <AddListing />,
   },
+  {
+    path: "buy",
+    element: <Transaction />,
+  },
   {path: "rating",
     element: <Rating />,
+  },
+  {
+    path: "suspended",
+    element: <Suspended />,
   }
 ]);
 
