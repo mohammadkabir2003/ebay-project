@@ -15,7 +15,6 @@ router.get('/', (req, res) => {
         console.error('Database error:', err);
         return res.status(500).json({ error: 'Database error' });
       }
-      console.log('Fetched listings:', results);
       res.json(results);
     });
 });

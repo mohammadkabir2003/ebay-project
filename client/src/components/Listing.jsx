@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import CommentModal from './CommentModal';
 
 const Listing = ({ listing }) => {
   const [bidAmount, setBidAmount] = useState('');
   const [highestBid, setHighestBid] = useState(0); // Start with the minimum bid
   const [isMaxReached, setIsMaxReached] = useState(false);
   const [message, setMessage] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Fetch the current highest bid
     const fetchHighestBid = async () => {
@@ -95,7 +97,7 @@ const Listing = ({ listing }) => {
         </div>
         </div>
           {/* Enter Bid Section */}
-          <div className="mt-4">
+          <div className="mt-4 space-y-2">
           <h4 className="text-md font-semibold mb-2">Place Your Bid</h4>
           <input
             type="number"
@@ -105,6 +107,7 @@ const Listing = ({ listing }) => {
             className="border border-gray-300 p-2 w-full mb-2 rounded-md"
             disabled={isMaxReached}
           />
+          <div className="flex justify-between">
           <button
             onClick={handleBid}
             className={`px-4 py-2 rounded ${
@@ -114,6 +117,19 @@ const Listing = ({ listing }) => {
           >
             {isMaxReached ? 'Max Bid Reached' : 'Place Bid'}
           </button>
+         
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Comments
+          </button></div>
+          {isModalOpen && (
+            <CommentModal
+              listingId={listing.id}
+              onClose={() => setIsModalOpen(false)}
+            />
+          )}
           {message && <p className="mt-2 text-sm text-black-500">{message}</p>}
         </div>
       </div>
