@@ -88,7 +88,7 @@ router.post('/login', (req, res) => {
     }
 
         // Check complaints and update VIP status
-    if (user.complaints > 0 || user.balance < 5000 && user.is_vip) {
+    if (user.complaints > 0 && user.is_vip || user.balance < 5000 && user.is_vip) {
       const updateQuery = `UPDATE users SET is_vip = 0 WHERE id = ?`;
       db.query(updateQuery, [user.id], (updateErr) => {
         if (updateErr) {
@@ -184,6 +184,48 @@ router.get('/userprofile', (req, res) => {
   });
 });
 
+const updateVipStatus = async (userId) => {
+  try {
+    // Query to check user details
+    const query = `
+      SELECT 
+        balance, 
+        transactions,
+        complaints
+      FROM users 
+      WHERE id = ?
+    `;
+
+    db.query(query, [userId], (err, results) => {
+      if (err) {
+        console.error('Database error:', err);
+        return; // Stop execution on error
+      }
+  
+      if (results.length === 0) {
+        console.log('User not found.');
+        return; // Stop execution if user is not found
+      }
+  
+      const { balance, transactions, complaints } = results[0];
+      const isVip = balance > 5000 && transactions > 5 && complaints === 0;
+  
+      // Update the user's VIP status
+      const updateQuery = `UPDATE users SET is_vip = ? WHERE id = ?`;
+      db.query(updateQuery, [isVip, userId], (updateErr) => {
+        if (updateErr) {
+          console.error('Error updating VIP status:', updateErr);
+          return; // Stop execution on error
+        }
+  
+        console.log(`User ID ${userId}: VIP status updated to ${isVip}`);
+      });
+    });
+  } catch (error) {
+    console.error('Error updating VIP status:', error);
+  };
+};
+
 // Route to deposit funds
 router.post('/deposit', (req, res) => {
   const userId = req.session.user.id;
@@ -197,6 +239,8 @@ router.post('/deposit', (req, res) => {
       console.error('Database error:', err.message);
       return res.status(500).json({ error: 'Database error' });
     }
+    // Update VIP status for buyer
+    updateVipStatus(userId);
     res.json({ message: 'Deposit successful!' });
   });
 });
@@ -217,6 +261,8 @@ router.post('/withdraw', (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(400).json({ error: 'Insufficient balance.' });
     }
+    // Update VIP status for buyer
+    updateVipStatus(userId);
     res.json({ message: 'Withdrawal successful!' });
   });
 });

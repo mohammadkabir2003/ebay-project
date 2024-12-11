@@ -88,6 +88,9 @@ const Navbar = () => {
           <Link to="/admin">
             <button className="p-4">Admin</button>
           </Link>
+          <Link to="/special">
+            <button className="p-4">VIP-Special</button>
+          </Link>
             <Link to="/profile" className="bg-green-400 px-3 py-4 mx-2 rounded hover:bg-red-500">
               Profile Page
             </Link>

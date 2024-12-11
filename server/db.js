@@ -4,7 +4,7 @@ const mysql = require('mysql2');
 const db = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'Salmon123@',
+  password: 'hello5127',
   database: 'e-bid',
   port: 3306  // MySQL listens on port 3306
 });
