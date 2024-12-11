@@ -9,6 +9,7 @@ const bidRouter = require('./routes/Bids'); // Import the bids router
 const listingsRouter = require('./routes/Listings'); // Import the listings router
 const sellerRouter = require('./routes/Seller'); // Import the seller router
 const ratingRouter = require('./routes/Rating'); // Import the rating router
+const commentsRouter = require('./routes/Comments');
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use('/listings', listingsRouter);
 app.use(bidRouter);
 app.use(sellerRouter);
 app.use(ratingRouter);
+app.use('/', commentsRouter);
 
 // Start the server
 app.listen(3001, () => {

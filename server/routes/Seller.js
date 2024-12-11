@@ -284,7 +284,7 @@ sellerRouter.get('/transaction', isAuthenticated, (req, res) => {
                   updateVipStatus(buyer_id);
 
   
-                  res.json({ message: `Transaction confirmed successfully. Final amount: $${finalAmount.toFixed(2)}`, finalAmount });
+                  res.json({ message: `Transaction confirmed successfully. Final amount: $${finalAmount}`, finalAmount });
         });
       });
     });
