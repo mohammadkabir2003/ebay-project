@@ -1,0 +1,48 @@
+***RECOMMENDED - DELETE ALL YOUR TABLES AND CREATE THESE***
+
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL, 
+  username VARCHAR(50) UNIQUE NOT NULL, 
+  email VARCHAR(255) UNIQUE NOT NULL, 
+  password VARCHAR(255) NOT NULL, 
+  balance DECIMAL(10, 2) DEFAULT 0.00, 
+  role ENUM('visitor', 'user', 'admin') DEFAULT 'visitor', 
+  is_vip BOOLEAN DEFAULT FALSE, 
+  status ENUM('pending', 'approved', 'rejected', 'suspended', 'leave', 'banned') DEFAULT 'pending',
+  complaints INT DEFAULT 0,
+  suspensions INT DEFAULT 0,
+  transactions INT DEFAULT 0
+);
+
+CREATE TABLE listings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    min_bid DECIMAL(10, 2) NOT NULL,
+    max_bid DECIMAL(10, 2) NOT NULL,
+    status ENUM('available', 'sold') DEFAULT 'available'
+);
+
+CREATE TABLE bids (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    listing_id INT NOT NULL,
+    user_id INT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL
+);
+
+CREATE TABLE transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    listing_id INT NOT NULL,
+    buyer_id INT NOT NULL,
+    seller_id INT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL
+);
+
+CREATE TABLE ratings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    rater_id INT NOT NULL,
+    ratee_id INT NOT NULL,
+    rating ENUM('1', '2', '3', '4', '5') NOT NULL
+);
