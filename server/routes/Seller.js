@@ -357,6 +357,7 @@ sellerRouter.get('/transactions/completed', isAuthenticated, (req, res) => {
         transactions.listing_id,
         transactions.amount,
         transactions.status,
+        transactions.seller_id,
         listings.title AS listing_title,
         users.name AS seller_name
       FROM transactions
@@ -373,6 +374,35 @@ sellerRouter.get('/transactions/completed', isAuthenticated, (req, res) => {
   
       res.json(results); // Send completed transactions to the frontend
     });
+});
+
+// Route to file a complaint against a seller
+sellerRouter.post('/file-complaint', (req, res) => {
+  const { sellerId } = req.body;
+  console.log('Seller ID:', sellerId);
+  if (!sellerId) {
+    return res.status(400).json({ error: 'Seller ID is required.' });
+  }
+
+  // Increment the complaints count for the seller
+  const query = `
+    UPDATE users 
+    SET complaints = complaints + 1 
+    WHERE id = ?
+  `;
+
+  db.query(query, [sellerId], (err, result) => {
+    if (err) {
+      console.error('Error updating complaints count:', err);
+      return res.status(500).json({ error: 'Failed to file complaint.' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Seller not found.' });
+    }
+
+    res.json({ message: 'Complaint filed successfully.' });
+  });
 });
     
 

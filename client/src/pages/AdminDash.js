@@ -113,6 +113,52 @@ const AdminDashboard = () => {
       .catch((err) => console.error('Error leaving system:', err));
   };
 
+  const [suspendedUsers, setSuspendedUsers] = useState([]);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+
+  // Fetch suspended users on component mount
+  useEffect(() => {
+    fetch('http://localhost:3001/admin/suspended-users', {
+      credentials: 'include', // Include session cookies for authentication
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch suspended users.');
+        }
+        return res.json();
+      })
+      .then((data) => setSuspendedUsers(data))
+      .catch((err) => {
+        console.error('Error fetching suspended users:', err);
+        setError('Could not load suspended users.');
+      });
+  }, []);
+
+  // Handle user reactivation
+  const handleReactivateUser = (userId) => {
+    fetch('http://localhost:3001/admin/reactivate-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include', // Include session cookies
+      body: JSON.stringify({ userId }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to reactivate user.');
+        }
+        return res.json();
+      })
+      .then((data) => {
+        setMessage(data.message);
+        setSuspendedUsers((prev) => prev.filter((user) => user.id !== userId));
+      })
+      .catch((err) => {
+        console.error('Error reactivating user:', err);
+        setError('Could not reactivate user.');
+      });
+  };
+
   if (loading) {
     // Show a loading message while session is being fetched
     return <p>Loading...</p>;
@@ -212,6 +258,51 @@ const AdminDashboard = () => {
                 </tr>
               )}
             </tbody>
+          </table>
+        </div>
+
+        {/* Suspended Users Table */}
+        <h2 className="text-2xl font-bold text-center mb-6">Suspended Users</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto border-collapse">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="border border-gray-300 p-2 text-left">Name</th>
+              <th className="border border-gray-300 p-2 text-left">Username</th>
+              <th className="border border-gray-300 p-2 text-left">Email</th>
+              <th className="border border-gray-300 p-2 text-left">Suspensions</th>
+              <th className="border border-gray-300 p-2 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          {suspendedUsers.length > 0 ? (
+            suspendedUsers.map((user) => (
+              <tr key={user.id} className="bg-gray-50">
+                <td className="border border-gray-300 p-2">{user.name}</td>
+                <td className="border border-gray-300 p-2">{user.username}</td>
+                <td className="border border-gray-300 p-2">{user.email}</td>
+                <td className="border border-gray-300 p-2">{user.suspensions}</td>
+                <td className="border border-gray-300 p-2 text-center">
+                  <button
+                    onClick={() => handleReactivateUser(user.id)}
+                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  >
+                    Reactivate
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan="5"
+                className="border border-gray-300 p-2 text-center text-gray-500"
+              >
+                No suspended users.
+              </td>
+            </tr>
+          )}
+        </tbody>
           </table>
         </div>
 

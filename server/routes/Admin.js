@@ -69,7 +69,42 @@ adminrouter.post('/admin/opt-out', isAdmin, (req, res) => {
 
     res.json({ message: `User left system successfully` });
 });
-});  
+});
+
+// Route to fetch suspended users
+adminrouter.get('/admin/suspended-users', isAdmin, (req, res) => {
+  const query = `SELECT id, name, username, email, suspensions FROM users WHERE status = 'suspended'`;
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Failed to fetch suspended users.' });
+    }
+    res.json(results);
+  });
+});
+
+// Route to reactivate a suspended user
+adminrouter.post('/admin/reactivate-user', isAdmin, (req, res) => {
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required.' });
+  }
+
+  const query = `UPDATE users SET status = 'approved' WHERE id = ? AND status = 'suspended'`;
+  db.query(query, [userId], (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Failed to reactivate user.' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found or not suspended.' });
+    }
+
+    res.json({ message: 'User reactivated successfully.' });
+  });
+});
 
 
 module.exports = adminrouter;
