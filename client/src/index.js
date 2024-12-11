@@ -13,6 +13,8 @@ import Suspended from "./pages/Suspended";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AddListing from "./pages/AddListing";
 import Rating from "./pages/Rating";
+import Transaction from "./pages/Transaction";
+import Special from "./pages/Special";
 const router = createBrowserRouter([
   //{ path: "/", element: <LandingPage /> },
   {
@@ -43,11 +45,20 @@ const router = createBrowserRouter([
     path: "add-listing",
     element: <AddListing />,
   },
+  {
+    path: "buy",
+    element: <Transaction />,
+  },
   {path: "rating",
     element: <Rating />,
   },
-  {path: "suspended",
+  {
+    path: "suspended",
     element: <Suspended />,
+  },
+  {
+    path: "special",
+    element: <Special />,
   }
 ]);
 

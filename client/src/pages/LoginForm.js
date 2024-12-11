@@ -26,6 +26,7 @@ const LoginForm = ({ onLoginSuccess }) => {
         if (response.status === 403 && data.redirect) {
           navigate(data.redirect);
         }
+
         if (response.ok) {
           localStorage.setItem('role', data.role); // Store role in localStorage
           setMessage('Login successful.');

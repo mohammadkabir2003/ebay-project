@@ -31,7 +31,7 @@ const Rating = () => {
     });
 };
 
- 
+
 
     const handleRateUsers = async() => {
         // Send the ratings to the server
@@ -116,8 +116,8 @@ const Rating = () => {
     useEffect(() => {
         fetchUserDetails();
     }, []);
-        
-  
+
+
 
   //console.log('Logged-in user ID:', userDetails?.id);
 
@@ -148,7 +148,7 @@ const Rating = () => {
             fetchTransactionBuyerDetails();
         }
         }, [userDetails]);
-    
+
     const fetchTransactionSellerDetails = async () => {
     if (!userDetails?.id) return; // Ensure userDetails is available
         try {
@@ -174,13 +174,13 @@ const Rating = () => {
             fetchTransactionSellerDetails();
         }
         }, [userDetails]);
-    
+
 
 
     return (
         <>
             <Navbar />
-            
+
                 <div className="bg-gradient-to-r from-[#CADCFC] to-[#89ABE3] h-screen flex items-center justify-center">
                     <div className="flex flex-col items-center">
                         <h2 className="text-2xl font-bold text-center mb-6">Rate Buyers</h2>
@@ -209,7 +209,7 @@ const Rating = () => {
                                             //console.log(e.target.value, user.id);
                                             handleRatingChangeBuyer(user.transaction_id, user.id, e.target.value);
                                             //console.log(userDetails.id, userDetails.username);
-                                            
+
                                         }} >    
                                         <option value={0} disabled></option>
                                         <option value = {1}>1</option>
@@ -287,10 +287,10 @@ const Rating = () => {
                     </div>
                     </div>
 
-                    
-                
-                
-        
+
+
+
+
         </>
     )
     }

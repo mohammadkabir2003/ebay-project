@@ -59,6 +59,28 @@ router.post('/login', (req, res) => {
       return res.status(403).json({ error: 'User not approved, awaiting admin approval.' });
     }
 
+    // Check if the user is banned
+    if (user.status === 'banned') {
+      return res.status(403).json({ error: 'User has been permanently banned.' });
+    }
+
+    // Check if the user is suspended three times
+    if (user.suspensions === 3) {
+      const banQuery = `UPDATE users SET status = 'banned' WHERE id = ?`;
+      db.query(banQuery, [user.id], (err) => {
+        if (err) {
+          return res.status(500).json({ error: 'Failed to ban user.' });
+      }
+    });
+    return res.status(403).json({ error: 'User has been permanently banned after three suspensions.' });
+  } 
+
+    // Check if the user is suspended and redirect to suspended page
+    if (user.status === 'suspended') {
+        req.session.user = { id: user.id, username: user.username, role: user.role };
+      return res.status(403).json({ redirect: '/suspended' }); // Send redirect instruction
+    }
+
     // Check if the user is pending
     if (user.status !== 'approved') {
       return res.status(403).json({ error: 'User must be approved to login' });
@@ -86,6 +108,7 @@ router.post('/login', (req, res) => {
     res.json({ message: 'Login successful', role: user.role });
   });
 });
+
 
 router.post('/logout', (req, res) => {
   if (req.session) {
@@ -138,7 +161,7 @@ router.post('/opt-out', isUser, (req, res) => {
 router.get('/userprofile', (req, res) => {
   const userId = req.session.user.id; // Get user ID from the session
 
-  const query = `SELECT name, username, balance FROM users WHERE id = ?`;
+  const query = `SELECT name, username, balance, transactions, is_vip FROM users WHERE id = ?`;
   db.query(query, [userId], (err, results) => {
     if (err) {
       return res.status(500).json({ error: 'Database error' });
@@ -186,6 +209,59 @@ router.post('/withdraw', (req, res) => {
       return res.status(400).json({ error: 'Insufficient balance.' });
     }
     res.json({ message: 'Withdrawal successful!' });
+  });
+});
+
+
+// Middleware for checking if the user is authenticated
+const isAuthenticated = (req, res, next) => {
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ error: 'Unauthorized access. Please log in.' });
+  }
+  next();
+};
+
+// Handle fine payment
+router.post('/pay-fine', isAuthenticated, (req, res) => {
+  const userId = req.session.user.id;
+
+  // Check if the user is suspended
+  const checkUserSuspensionQuery = `
+    SELECT status, balance FROM users WHERE id = ?;
+  `;
+  
+  db.query(checkUserSuspensionQuery, [userId], (err, results) => {
+    if (err) {
+      console.error('Error checking user suspension:', err);
+      return res.status(500).json({ error: 'Failed to check user status.' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const user = results[0];
+    if (user.status !== 'suspended') {
+      return res.status(400).json({ error: 'User is not suspended.' });
+    }
+
+    if (user.balance < 50) {
+      return res.status(400).json({ error: 'Insufficient balance to pay fine.' });
+    }
+
+    // Deduct $50 fine from user balance and reactivate account
+    const deductFineQuery = `
+      UPDATE users SET balance = balance - 50, status = 'approved' WHERE id = ?;
+    `;
+
+    db.query(deductFineQuery, [userId], (err) => {
+      if (err) {
+        console.error('Error processing fine payment:', err);
+        return res.status(500).json({ error: 'Failed to process fine payment.' });
+      }
+
+      res.json({ message: 'Fine paid successfully, account reactivated.' });
+    });
   });
 });
 
