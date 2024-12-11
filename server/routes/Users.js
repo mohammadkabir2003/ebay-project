@@ -87,6 +87,19 @@ router.post('/login', (req, res) => {
       return res.status(400).json({ error: 'Incorrect password.' });
     }
 
+        // Check complaints and update VIP status
+    if (user.complaints > 0 || user.balance < 5000 && user.is_vip) {
+      const updateQuery = `UPDATE users SET is_vip = 0 WHERE id = ?`;
+      db.query(updateQuery, [user.id], (updateErr) => {
+        if (updateErr) {
+          console.error('Failed to update VIP status:', updateErr);
+          return res.status(500).json({ error: 'Failed to update VIP status' });
+        }
+
+        console.log(`User ${user.username} lost VIP status due to complaints.`);
+      });
+    }
+
     // Check and update role from visitor to user
     if (user.role === 'visitor') {
       const updateQuery = `UPDATE users SET role = 'user' WHERE id = ?`;
